@@ -9,6 +9,10 @@ HEIGHT = car.HEIGHT
 class Game(arc.Window):
     def __init__(self):
         super().__init__(WIDTH, HEIGHT, "game")
+        self.tile_map = None
+        self.scene = None
+        self.physics_engine = None
+        self.camera = None
 
     def setup(self):
         arc.set_background_color(arc.color.WHEAT)

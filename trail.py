@@ -29,15 +29,6 @@ class TrailRenderer():
       for i in range(len(self.l)):
          arcade.draw_scaled_texture_rectangle(self.l[i][0], self.l[i][1], self.tire, angle=self.l[i][2], alpha=self.t[i])
          arcade.draw_scaled_texture_rectangle(self.r[i][0], self.r[i][1], self.tire, angle=self.l[i][2], alpha=self.t[i])
-         #arcade.draw_circle_filled(self.l[i][0], self.l[i][1], tire_size, (0,0,0,self.t[i]))
-         #arcade.draw_circle_filled(self.r[i][0], self.r[i][1], tire_size, (0,0,0,self.t[i]))
-
-
-
-         #a = other.get_adjusted_hit_box()
-         #arcade.draw_circle_filled(a[0][0], a[0][1], size, arcade.color.BLACK)
-         #arcade.draw_circle_filled(a[1][0], a[1][1], size, arcade.color.BLACK)
-         
 
    def update_trail(self, other):
       a = other.get_adjusted_hit_box()
