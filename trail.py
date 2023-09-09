@@ -20,8 +20,8 @@ class TrailRenderer():
       #print((main.forward_x - main.move_force_x) * .166 * 1.5)
       #print((main.forward_y - main.move_force_y) * .166 * 1.5)
 
-      print(math.radians(main.angle))
-      print(math.atan2(main.forward_x - main.move_force_x,main.forward_y - main.move_force_y))
+      #print("angle:", main.angle)
+      #print(math.atan2(main.forward_x - main.move_force_x,main.forward_y - main.move_force_y))
 
       #if other.speed > 300:
       self.update_trail(other)
