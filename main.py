@@ -2,7 +2,6 @@ import arcade as arc
 import arcade.key
 import arcade.color
 import car
-import numpy as np
 
 debug = True
 
@@ -12,21 +11,20 @@ HEIGHT = car.HEIGHT
 class Game(arc.Window):
     def __init__(self):
         super().__init__(fullscreen=True)
-        self.tile_map = None
-        self.scene = None
-        self.physics_engine = None
         self.camera = None
         self.background = None
+        self.player_list = None
+        self.player_car = None
+        self.trail_car = None
 
     def setup(self):
         arc.set_background_color(arc.color.WHEAT)
         arc.enable_timings()
+        self.background = self.background = arc.load_texture("track7.png")
         self.player_list = arc.SpriteList()
-        self.player_car = car.Car("images/car.png", .2)
-        self.trail_car = car.Car("images/car.png", .14) # .7x
+        self.player_car = car.Car("images/car.png", .20)
+        self.trail_car = car.Car("images/car.png",  .14) # .7x
         self.player_list.append(self.player_car)
-        
-        self.background = arc.load_texture("track4.png")
 
     def on_draw(self):
         arc.start_render()
@@ -36,17 +34,18 @@ class Game(arc.Window):
         self.player_list.draw()
 
         if debug:
-            arc.draw_point(100,100, arc.color.WHITE, .5)
-            arc.draw_text("self.player_car.angle " + str(self.player_car.angle), WIDTH-230, HEIGHT-30, arc.color.RED, align="right", width=200)
-            arc.draw_text("self.player_car.first_angle " + str(self.player_car.first_angle), WIDTH-230, HEIGHT-40, arc.color.RED, align="right", width=200)
+            arc.draw_text("fps: " + str(int(arc.get_fps())), WIDTH-650, HEIGHT-30, arc.color.RED, align="right", width=600)
+            arc.draw_text("self.player_car.pos_turn_rate " + str(self.player_car.pos_turn_rate), WIDTH-650, HEIGHT-50, arc.color.RED, align="right", width=600)
+            arc.draw_text("self.player_car.grip " + str(self.player_car.grip), WIDTH-650, HEIGHT-70, arc.color.RED, align="right", width=600)
 
-            slip_x = self.player_car.center_x - (self.player_car.move_force_x)/3
-            slip_y = self.player_car.center_y + (self.player_car.move_force_y)/3
-            arc.draw_line(self.player_car.center_x, self.player_car.center_y, slip_x, slip_y, arc.color.RED, 3)
+            aim_x = self.player_car.center_x - (self.player_car.move_force_x)/3
+            aim_y = self.player_car.center_y + (self.player_car.move_force_y)/3
+            arc.draw_point(aim_x, aim_y, arc.color.RED, 5)
 
-            slip_x = self.player_car.center_x - (self.player_car.fx * 200)/3
-            slip_y = self.player_car.center_y + (self.player_car.fy * 200)/3
-            arc.draw_line(self.player_car.center_x, self.player_car.center_y, slip_x, slip_y, arc.color.YELLOW, 3)
+            #aim_x = self.player_car.center_x - (self.player_car.forward_x*13)
+            #aim_y = self.player_car.center_y + (self.player_car.forward_y*13)
+            #arc.draw_point(aim_x, aim_y, arc.color.GREEN, 5)
+            
 
 
 
@@ -56,7 +55,6 @@ class Game(arc.Window):
     def on_update(self, delta_time):
         self.player_list.on_update()
         self.player_car.update_trail_car(self.trail_car)
-        #print(arcade.get_fps())
         print("\n\n\n\n\n\n")
 
     def on_key_press(self, symbol, modifiers):
@@ -81,13 +79,6 @@ class Game(arc.Window):
             self.player_car.left_turn = False
         if symbol == arcade.key.D or symbol == arc.key.RIGHT:
             self.player_car.right_turn = False
-            
-        
-
-    #def on_mouse_motion(self, x, y, dx, dy):
-    #    print("mouse")
-
-
 
 if __name__ == "__main__":
     app = Game()

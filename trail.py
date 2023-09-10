@@ -1,48 +1,32 @@
 import arcade
 import math
-#import car
 
-tire_size = 3
+tire_size = 4
 length = 30
+dist = 3
 
 class TrailRenderer():
    
    def __init__(self):
-      self.t = [(i * (255/length)) for i in range(length)]
-      self.t.reverse()
-      self.l = []
-      self.r = []
+      #self.trail = [ {'l': (2, 3), 'r': (3, 4), 'angle': 90, 'alpha': 255}, {'x': (2, 3), 'y': (3, 4), 'angle': 90, 'alpha': 255}, ... ]
+      self.trail = []
+
+      self.counter = 0
 
       self.tire = arcade.load_texture("images/tire.png")
-      #self.car = Car
 
    def render_trail(self, other, main):
-      #print((main.forward_x - main.move_force_x) * .166 * 1.5)
-      #print((main.forward_y - main.move_force_y) * .166 * 1.5)
-
-      #print("angle:", main.angle)
-      #print(math.atan2(main.forward_x - main.move_force_x,main.forward_y - main.move_force_y))
-
-      #if other.speed > 300:
-      self.update_trail(other)
-
-      for i in range(len(self.l)):
-         arcade.draw_scaled_texture_rectangle(self.l[i][0], self.l[i][1], self.tire, angle=self.l[i][2], alpha=self.t[i])
-         arcade.draw_scaled_texture_rectangle(self.r[i][0], self.r[i][1], self.tire, angle=self.l[i][2], alpha=self.t[i])
+      for i in self.trail:
+         arcade.draw_scaled_texture_rectangle(i['l'][0], i['l'][1], self.tire, .5, i['angle'], i['alpha'])
+         arcade.draw_scaled_texture_rectangle(i['r'][0], i['r'][1], self.tire, .5, i['angle'], i['alpha'])
 
    def update_trail(self, other):
-      a = other.get_adjusted_hit_box()
-      x = a[0]
-      y = a[1]
-      x.append(other.angle)
-      y.append(other.angle)
-      self.l.insert(0,x)
-      self.r.insert(0,y)
-
-      if len(self.l)  > length-1:
-         del self.l[length-1]
-      if len(self.r)  > length-1:
-         del self.r[length-1]
-
-      #print(self.l)
-
+      if(self.counter == dist):
+         a = other.get_adjusted_hit_box()
+         self.trail.insert(0, {'l': a[0], 'r': a[1], 'angle': other.angle, 'alpha':  255})
+         self.counter = 0
+      self.counter += 1
+      for i in self.trail:
+         i['alpha'] -= 15 if i['alpha'] > 0 else 0
+      if len(self.trail) > length-1:
+         del self.trail[length-1]
