@@ -20,6 +20,7 @@ neg_turn_rate = .25
 
 
 class Car(arc.Sprite): 
+    #new env
     def __init__(self, texture, scaling):
         super().__init__(texture, scaling, hit_box_algorithm=None)
 
