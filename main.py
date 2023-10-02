@@ -3,7 +3,7 @@ import arcade.key
 import arcade.color
 import car
 
-debug = True
+debug = False
 
 WIDTH = car.WIDTH
 HEIGHT = car.HEIGHT
@@ -20,7 +20,7 @@ class Game(arc.Window):
     def setup(self):
         arc.set_background_color(arc.color.WHEAT)
         arc.enable_timings()
-        self.background = self.background = arc.load_texture("track7.png")
+        self.background = self.background = arc.load_texture("track7_grey.png")
         self.player_list = arc.SpriteList()
         self.player_car = car.Car("images/car.png", .20)
         self.trail_car = car.Car("images/car.png",  .14) # .7x
@@ -33,8 +33,9 @@ class Game(arc.Window):
         self.player_car.drawTrail(self.trail_car)
         self.player_list.draw()
 
+        arc.draw_text("fps: " + str(int(arc.get_fps())), WIDTH-650, HEIGHT-30, arc.color.YELLOW, align="right", width=600)
+
         if debug:
-            arc.draw_text("fps: " + str(int(arc.get_fps())), WIDTH-650, HEIGHT-30, arc.color.YELLOW, align="right", width=600)
             arc.draw_text("self.player_car.on_track " + str(self.player_car.on_track), WIDTH-650, HEIGHT-50, arc.color.YELLOW, align="right", width=600)
             arc.draw_text("self.player_car.grip " + str(self.player_car.grip), WIDTH-650, HEIGHT-70, arc.color.YELLOW, align="right", width=600)
 

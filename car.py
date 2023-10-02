@@ -7,16 +7,17 @@ HEIGHT = 900
 
 OFF_ROAD = (0, 0, 0)
 
-top_speed = 1000
+top_speed = 500
+supergrip = 2.3
 
-max_turn = 1.5
+max_turn = 1.2
 
-accel_rate = .03
+accel_rate = .01
 coast_rate = .015
-brake_rate = .02
+brake_rate = .025
 
-pos_turn_rate = .025
-neg_turn_rate = .25
+pos_turn_rate = .018
+neg_turn_rate = .1
 
 
 class Car(arc.Sprite): 
@@ -41,7 +42,8 @@ class Car(arc.Sprite):
         self.horizontal_input = 0
         self.vertical_input = 0
 
-        self.grip = 4
+        self.grip = supergrip
+        self.ygrip = self.grip
 
         self.gas = False
         self.brake = False
@@ -78,12 +80,12 @@ class Car(arc.Sprite):
     # format: [controller input] -/+= 0 if [controller input] >/<= [deadzone] else [nudge value]
     def processInput(self):
         if self.gas: #accel
-            pos_turn_rate = .03
-            self.grip = 4
+            #pos_turn_rate = .03
+            #self.ygrip = supergrip - supergrip/2
             self.vertical_input += 0 if self.vertical_input >= 1 else accel_rate
-        else:
-            pos_turn_rate = .05
-            self.grip = 5
+        #else:
+            #pos_turn_rate = .05
+            #self.ygrip = supergrip
         if not self.gas and self.vertical_input >= 0: # coasting
             self.vertical_input = 0 if self.vertical_input <= .1 else self.vertical_input - coast_rate
         if self.brake: #brake
@@ -180,13 +182,13 @@ class Car(arc.Sprite):
         self.forward_x = math.sin(angle_rad)
         self.forward_y = math.cos(angle_rad)
 
-        self.update_radar_list(angle_rad)
+        #self.update_radar_list(angle_rad)
         
         self.center_x -= self.move_force_x * delta_time
         self.center_y += self.move_force_y * delta_time
         
         self.move_force_x += (self.forward_x - self.move_force_x * self.grip) * delta_time
-        self.move_force_y += (self.forward_y - self.move_force_y * self.grip) * delta_time
+        self.move_force_y += (self.forward_y - self.move_force_y * self.ygrip) * delta_time
 
 
     def update_trail_car(self, trail_car):
