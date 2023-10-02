@@ -5,12 +5,12 @@ import car
 
 debug = True
 
-WIDTH = car.WIDTH
-HEIGHT = car.HEIGHT
+WIDTH = car.WIDTH * car.WINDOW_SCALE
+HEIGHT = car.HEIGHT * car.WINDOW_SCALE
 
 class Game(arc.Window):
     def __init__(self):
-        super().__init__(fullscreen=True)
+        super().__init__(WIDTH, HEIGHT, fullscreen=False)
         self.camera = None
         self.background = None
         self.player_list = None
@@ -20,10 +20,10 @@ class Game(arc.Window):
     def setup(self):
         arc.set_background_color(arc.color.WHEAT)
         arc.enable_timings()
-        self.background = self.background = arc.load_texture("track7.png")
+        self.background = self.background = arc.load_texture("track1_100x100.png")
         self.player_list = arc.SpriteList()
-        self.player_car = car.Car("images/car.png", .20)
-        self.trail_car = car.Car("images/car.png",  .14) # .7x
+        self.player_car = car.Car("images/car.png", .15)
+        self.trail_car = car.Car("images/car.png",  .1) # .7x
         self.player_list.append(self.player_car)
 
     def on_draw(self):
@@ -40,14 +40,14 @@ class Game(arc.Window):
 
             aim_x = self.player_car.center_x - (self.player_car.move_force_x)/3
             aim_y = self.player_car.center_y + (self.player_car.move_force_y)/3
-            arc.draw_point(aim_x, aim_y, arc.color.RED, 5)
+            arc.draw_point(aim_x, aim_y, arc.color.BLACK, 5)
 
             #aim_x = self.player_car.center_x - (self.player_car.forward_x*13)
             #aim_y = self.player_car.center_y + (self.player_car.forward_y*13)
             #arc.draw_point(aim_x, aim_y, arc.color.GREEN, 5)
 
             for i in self.player_car.radar_list:
-                arc.draw_point(i[1], i[2], arc.color.YELLOW, 5)
+                arc.draw_point(i[1], i[2], arc.color.RED, 5)
             
 
     def on_update(self, delta_time):

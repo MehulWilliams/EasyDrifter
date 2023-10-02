@@ -2,8 +2,9 @@ import arcade as arc
 import math
 import trail as tr
 
-WIDTH = 1440
-HEIGHT = 900
+WIDTH = 100
+HEIGHT = 100
+WINDOW_SCALE = 5
 
 OFF_ROAD = (0, 0, 0)
 
@@ -20,12 +21,11 @@ neg_turn_rate = .25
 
 
 class Car(arc.Sprite): 
-    #new env
     def __init__(self, texture, scaling):
         super().__init__(texture, scaling, hit_box_algorithm=None)
 
         self.center_x = WIDTH/2
-        self.center_y = 800
+        self.center_y = HEIGHT - HEIGHT/5
 
         self.move_force_x = 0
         self.move_force_y = 0
@@ -66,14 +66,14 @@ class Car(arc.Sprite):
         self.turn_speed = 0
 
     def bound(self):
-        if self.center_y > HEIGHT:
+        if self.center_y > HEIGHT*WINDOW_SCALE:
             self.center_y = 0
         if self.center_y < 0:
-            self.center_y = HEIGHT
-        if self.center_x > WIDTH:
+            self.center_y = HEIGHT*WINDOW_SCALE
+        if self.center_x > WIDTH*WINDOW_SCALE:
             self.center_x = 0
         if self.center_x < 0:
-            self.center_x = WIDTH
+            self.center_x = WIDTH*WINDOW_SCALE
 
 
     # format: [controller input] -/+= 0 if [controller input] >/<= [deadzone] else [nudge value]
@@ -82,9 +82,14 @@ class Car(arc.Sprite):
             pos_turn_rate = .03
             self.grip = 4
             self.vertical_input += 0 if self.vertical_input >= 1 else accel_rate
+        elif self.brake:
+            pos_turn_rate = .08
+            self.grip = 6
         else:
             pos_turn_rate = .05
             self.grip = 5
+
+        
         if not self.gas and self.vertical_input >= 0: # coasting
             self.vertical_input = 0 if self.vertical_input <= .1 else self.vertical_input - coast_rate
         if self.brake: #brake
@@ -106,7 +111,7 @@ class Car(arc.Sprite):
         
         angle = angle_rad - (FOV/2)
         #angle = angle_rad - 1.047198
-        radar_range = 50
+        radar_range = 70
 
         radar_steps = 7  #how many points to sample along ray.
         if self.radar_poll == polling_rate-1:
