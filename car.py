@@ -10,13 +10,13 @@ OFF_ROAD = (0, 0, 0)
 top_speed = 500
 supergrip = 2.3
 
-max_turn = 1.2
+max_turn = 1.5
 
 accel_rate = .01
 coast_rate = .015
 brake_rate = .025
 
-pos_turn_rate = .018
+pos_turn_rate = .02
 neg_turn_rate = .1
 
 
@@ -103,13 +103,13 @@ class Car(arc.Sprite):
             self.horizontal_input = 0 if self.horizontal_input >= -.1 else self.horizontal_input + neg_turn_rate
         
     # polling_rate = n, where radar polls once every n frames
-    def update_radar_list(self, angle_rad, polling_rate=2, FOV=2.094396): #fov in radians
+    def update_radar_list(self, angle_rad, polling_rate=5, FOV=2.094396): #fov in radians
         
         angle = angle_rad - (FOV/2)
         #angle = angle_rad - 1.047198
         radar_range = 50
 
-        radar_steps = 7  #how many points to sample along ray.
+        radar_steps = 5  #how many points to sample along ray.
         if self.radar_poll == polling_rate-1:
             self.radar_poll = 0
             for i in range(len(self.radar_list)):

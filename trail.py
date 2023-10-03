@@ -3,7 +3,7 @@ import math
 
 tire_size = 4
 length = 30
-dist = 3
+dist = 1
 
 class TrailRenderer():
    
