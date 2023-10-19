@@ -9,12 +9,11 @@ debug = True
 
 WIDTH = car.WIDTH
 HEIGHT = car.HEIGHT
-SCALE = ncar.SCALE
 
 
 class Game(arc.Window):
     def __init__(self):
-        super().__init__(WIDTH, HEIGHT, fullscreen=True)
+        super().__init__(WIDTH, HEIGHT, fullscreen=False)
         self.camera = None
         self.background = None
         self.player_list = None
@@ -35,14 +34,13 @@ class Game(arc.Window):
         arc.set_background_color(arc.color.WHEAT)
         arc.enable_timings()
         self.camera = arcade.Camera(self.width, self.height)
-        
         #self.TextureAtlas = arc.TextureAtlas((2560, 1600))
-        self.startimg = Image.open("tracks_l/track1.png")
+        self.startimg = Image.open("tracks/track16s.png")
         self.img = self.startimg
         self.backgroundTexture = arc.Texture('backg', self.img)
-        #self.initTexture = arc.Texture.create_empty('init', (3500, 3500))
+        self.initTexture = arc.Texture.create_empty('init', (3500, 3500))
         #self.TextureAtlas.add(self.backgroundTexture)
-        #self.init = arcade.Sprite(center_x=0, center_y=0, texture=self.initTexture)
+        self.init = arcade.Sprite(center_x=0, center_y=0, texture=self.initTexture)
         #self.bg = arcade.Sprite(center_x=0, center_y=0, texture=self.backgroundTexture)
 
         # Create the spritelist and add the sprite
@@ -53,14 +51,13 @@ class Game(arc.Window):
         #self.background = arc.load_texture("tracks/track16.png", width=720, height=450)
         self.player_list = arc.SpriteList()
         self.texture_list = arc.SpriteList()
-        self.Car = ncar.ArcCar("images/car.png", .10*SCALE)
-        #self.StockCar = ncar.ArcCar("images/car.png", .16)
+        self.Car = ncar.Car("images/car.png", .16)
+        #self.StockCar = ncar.StockCar("images/car.png", .16)
         #self.trail_car = car.Car("images/car.png",  .112)  # .7x
         #self.player_list.append(self.init)
         #self.player_list.append(self.bg)
-        #self.player_list.append(self.init)
+        self.player_list.append(self.init)
         self.player_list.append(self.Car)
-        #self.player_list.append(self.StockCar)
         self.startingline = arc.create_polygon([(800, 840), (800, 720), (803, 840), (803, 720)], arc.color.WHITE)
         self.dt = 0
         
@@ -97,7 +94,7 @@ class Game(arc.Window):
         #    screen_center_y = 0
         #player_centered = screen_center_x, screen_center_y
 
-        self.camera.move_to((screen_center_x, screen_center_y), .1)
+        self.camera.move_to((screen_center_x, screen_center_y))
 
 
     def on_draw(self):
@@ -108,8 +105,8 @@ class Game(arc.Window):
         #arc.cleanup_texture_cache()
         #self.img = self.startimg.rotate(int(self.Car.nangle), center=(self.Car.center_x, self.Car.center_y))
         #newTexture = arc.Texture(f"new{self.counter}", self.startimg.rotate(int(self.Car.nangle), center=(self.Car.center_x, self.Car.center_y)))
-        #self.backgroundTexture.draw_scaled(WIDTH/2, HEIGHT/2, SCALE)
-        arc.draw_lrwh_rectangle_textured(0, 0, WIDTH*SCALE, HEIGHT*SCALE, self.backgroundTexture)
+        #newTexture.draw_scaled(self.Car.center_x, self.Car.center_y)
+        
 
         
         #with self.player_list.atlas.render_into(self.initTexture) as framebuffer:
@@ -125,8 +122,8 @@ class Game(arc.Window):
             #self.backgroundTexture = arc.Texture(f"new{self.counter}", self.startimg.rotate(int(self.Car.nangle), center=(self.Car.center_x, self.Car.center_y)))
             #self.backgroundTexture.draw_scaled(self.Car.center_x, self.Car.center_y)
             
-        #self.texture_list.atlas.add(arc.Texture(f"new{self.counter}", self.startimg.rotate(int(self.Car.nangle), center=(self.Car.center_x, self.Car.center_y))))
-        #self.texture_list.draw()
+        self.texture_list.atlas.add(arc.Texture(f"new{self.counter}", self.startimg.rotate(int(self.Car.nangle), center=(self.Car.center_x, self.Car.center_y))))
+        self.texture_list.draw()
             #arc.draw_lrwh_rectangle_textured(0, 0, WIDTH, HEIGHT, self.backgroundTexture)
             
             #newTexture.draw_scaled(self.Car.center_x, self.Car.center_y)
@@ -157,25 +154,20 @@ class Game(arc.Window):
                       HEIGHT-30, arc.color.YELLOW, align="right", width=600)
 
         if debug:
-            arc.draw_text(str(round(self.Car.grip, 0)), self.Car.center_x+20, self.Car.center_y, arc.color.YELLOW, align="right", width=50)
+            #arc.draw_text("self.Car.speed " + str(round(self.Car.speed//10, 0)*10),
+            #              WIDTH-650, HEIGHT-50, arc.color.YELLOW, align="right", width=600)
             arc.draw_text(str(round(self.Car.speed//10*10,0)), self.Car.center_x+20, self.Car.center_y+20, arc.color.YELLOW, align="right", width=50)
             
-            ##############
-            arc.draw_points(self.Car.TrailRenderer.s, arc.color.ORANGE, 10)
             self.startingline.draw()
             #print(arc.are_polygons_intersecting(()))
             magnitude = self.Car.speed
-            aim_x = self.Car.center_x - (self.Car.move_force_x)/2
-            aim_y = self.Car.center_y + (self.Car.move_force_y)/2
-            arc.draw_point(aim_x, aim_y, arc.color.LIGHT_BLUE, 5)
+            aim_x = self.Car.center_x - (self.Car.fx + self.Car.move_force_x) * magnitude
+            aim_y = self.Car.center_y + (self.Car.fy + self.Car.move_force_y) * magnitude
+            arc.draw_point(aim_x, aim_y, arc.color.BLUE, 5)
 
-            #aim_x = self.Car.center_x - (self.Car.move_force_x)
-            #aim_y = self.Car.center_y + (self.Car.move_force_y)
-            #arc.draw_point(aim_x, aim_y, arc.color.GREEN, 5)
-
-            #aim_x = self.Car.center_x - (self.Car.fx)
-            #aim_y = self.Car.center_y + (self.Car.fy)
-            #arc.draw_point(aim_x, aim_y, arc.color.RED, 5)
+            aim_x = self.Car.center_x - (self.Car.fx) * magnitude
+            aim_y = self.Car.center_y + (self.Car.fy) * magnitude
+            arc.draw_point(aim_x, aim_y, arc.color.RED, 5)
             '''
             aim_x = self.StockCar.center_x - (self.StockCar.move_force_x)
             aim_y = self.StockCar.center_y + (self.StockCar.move_force_y)
