@@ -3,22 +3,22 @@ import math
 
 WIDTH = 2880
 HEIGHT = 1800
-SCALE = 2
+SCALE = 7
 
 OFF_ROAD = (0, 0, 0)
 
-super_top_speed = 90 * SCALE # pixels/sec
-super_grip = 5
+super_top_speed = 75 * SCALE # pixels/sec
+super_grip = 3
 
-turn_speed = 190 # degrees/sec
+turn_speed = 180 # degrees/sec
 drift_speed = 50
 
 super_accel_rate = .007
 brake_rate = .03
-coast_rate = .005
+coast_rate = .007
 
 pos_turn_rate = .08
-neg_turn_rate = .35
+neg_turn_rate = .2
 
     
 class Car(arc.Sprite): 
@@ -119,19 +119,23 @@ class Car(arc.Sprite):
             if self.vertical_input >= -1:
                 self.vertical_input -= brake_rate
         if not self.gas and self.vertical_input >= 0:   #coasting
-            if self.vertical_input <= .35:
+            if self.vertical_input <= .15:
                 self.vertical_input = 0 
             else:
                 self.vertical_input -= coast_rate
         if not self.brake and self.vertical_input < 0:  #coasting from reverse
-            if self.vertical_input >= -.35:
+            if self.vertical_input >= -.15:
                 self.vertical_input = 0 
             else:
                 self.vertical_input += coast_rate
         
         if self.left_turn and self.horizontal_input <= 1:
+            if self.horizontal_input < 0:
+                self.horizontal_input = 0
             self.horizontal_input += pos_turn_rate
         if self.right_turn and self.horizontal_input >= -1: 
+            if self.horizontal_input > 0:
+                self.horizontal_input = 0
             self.horizontal_input -= pos_turn_rate
         if not self.left_turn and self.horizontal_input >= 0:
             if self.horizontal_input <= .35:
@@ -200,8 +204,8 @@ class Car(arc.Sprite):
         #print("self.angle          :", self.angle//10*10)
         #print("self.drift_angle    :", self.drift_angle//10*10, "\n")
         #print("change  angle       :", (self.angle - self.drift_angle)//10*10)
-        print(self.horizontal_input)
-        print(self.speed)
+        #print(self.horizontal_input)
+        #print(self.speed)
         return
     def limitspeed(self):
         if self.speed > self.top_speed:
@@ -252,10 +256,8 @@ class Trail():
         self.PositionSprite.set_position(self.Car.position[0], self.Car.position[1])
         if(self.counter == self.spacing):
             a = self.PositionSprite.get_adjusted_hit_box()
-            print(a)
             self.trail.insert(0, {'l': a[0], 'r': a[2], 'angle'
                                   : self.PositionSprite.angle, 'alpha':  255})
-            print(self.trail)
             self.counter = 0
             for i in self.trail:
                 i['alpha'] -= self.alpha_step if i['alpha'] > 0 else 0
@@ -309,9 +311,6 @@ class StockCar(Car):
 
         self.TrailRenderer.update_trail()
 
-        print(self.fx * self.top_speed * self.vertical_input, self.fy * self.top_speed * self.vertical_input)
-        print(self.move_force_x, self.move_force_y)
-
 
 
 class ArcCar(Car):
@@ -326,9 +325,8 @@ class ArcCar(Car):
         
         self.speed = math.sqrt(self.move_force_y**2 + self.move_force_x**2)
 
-        modifiers = delta_time
-        self.move_force_x += (self.fx * modifiers)
-        self.move_force_y += (self.fy * modifiers)
+        self.move_force_x += (self.fx * delta_time)
+        self.move_force_y += (self.fy * delta_time)
         self._internal_mf_x = self.move_force_x
         self._internal_mf_y = self.move_force_y
 
@@ -336,7 +334,6 @@ class ArcCar(Car):
         self.angle += self.change_angle
         self.angle %= 360
         self.drift_angle = math.degrees(math.atan2(self.move_force_y, -self.move_force_x))
-        #self.drift_angle = math.degrees(math.atan2(x1*y2-y1*x2,x1*x2+y1*y2))
 
         self.fx = math.sin(self.radians) * self.top_speed * self.vertical_input
         self.fy = math.cos(self.radians) * self.top_speed * self.vertical_input
@@ -344,15 +341,9 @@ class ArcCar(Car):
         self.center_x -= self.move_force_x * delta_time
         self.center_y += self.move_force_y * delta_time
         
-        self.move_force_deadzone()
-        self.grip = (-super_grip * self.vertical_input) + super_grip + 2.5
         self.move_force_x += ((self.fx - self.move_force_x) * delta_time*self.grip)
         self.move_force_y += ((self.fy - self.move_force_y) * delta_time*self.grip)
 
         self.limitspeed()
-
         self.TrailRenderer.update_trail()
-
-        #print(self.fx * self.top_speed * self.vertical_input, self.fy * self.top_speed * self.vertical_input)
-        #print(self.move_force_x, self.move_force_y)
 
